@@ -178,7 +178,10 @@ def latlondist(latd1, lond1, latd2, lond2):
               two lat/lon positions in degrees
         Out:
               distance in meters !!!! """
-
+    latd1 = float(latd1)
+    lond1 = float(lond1)
+    latd2 = float(latd2)
+    lond2 = float(lond2)
     # Haversine with average radius
 
     # Check for hemisphere crossing,
