@@ -1,7 +1,6 @@
 """ This plugin manages all the data loggers for my master thesis project. """
 # Import the global bluesky objects. Uncomment the ones you need
 from genericpath import exists
-
 from numpy import delete
 # , settings, navdb, sim, scr, tools
 from bluesky import core, traf, stack, scr, sim, navdb
@@ -23,17 +22,17 @@ update_interval = 1.0
 uav_log_header = \
     'UAV LOG\n' + \
     'Information about all of the UAVs\n\n' + \
-    'Deletion Time [s], UAVX, Distance Traveled'
+    'Deletion Time [s], UAV ID, Distance traveled [m], Distance away from end coordinate [m]'
 
 conflict_log_header = \
     'CONFLICTS LOG\n' + \
     'List of all conflict instances\n\n' + \
-    'Simulation Time [s], UAVX, UAVY'
+    'Simulation Time [s], UAV ID 1, UAV ID 2'
 
 loss_of_separation_log_header = \
     'LOSS OF SEPARATION LOG\n' + \
     'List of all LoS instances\n\n' + \
-    'Simulation Time [s], UAVX, UAVY, Distance between'
+    'Simulation Time [s], UAV ID 1, UAV ID 2, Distance between the UAVs [m]'
 
 
 
@@ -172,12 +171,14 @@ class Loggy(core.Entity):
             for uav in deleted_uavs:
                 last_known_position = self.current_position[uav]
                 current_uav_end_position = self.end_position[uav]
-                
-                remaining_distance = calculator.latlondist()
+        
+                remaining_distance = calculator.latlondist(float(last_known_position[0]), float(last_known_position[1]), float(current_uav_end_position.split(',')[0]), float(current_uav_end_position.split(',')[1]))
 
-                uav_log.log(uav, self.previous_active_uavs_distance_flown[uav])
+                uav_log.log(uav, self.previous_active_uavs_distance_flown[uav], remaining_distance)
                 
                 del self.previous_active_uavs_distance_flown[uav]
+                del self.current_position[uav]
+                del self.end_position[uav]
 
             self.previous_active_uavs = sanitized_currently_active_uavs
             
