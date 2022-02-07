@@ -86,6 +86,8 @@ class Loggy(core.Entity):
 
         self.previous_active_uavs = list()
         self.previous_active_uavs_distance_flown = dict()
+        self.current_position = dict()
+        self.end_position = dict()
 
     def update(self):
         ''' Periodic function calling each logger function. '''
@@ -147,8 +149,8 @@ class Loggy(core.Entity):
         for uav in currently_active_uavs:
             idx = traf.id2idx(uav)
             self.previous_active_uavs_distance_flown[uav] = traf.distflown[idx]
-
-
+            self.current_position[uav] = (traf.lat[idx], traf.lon[idx])
+            self.end_position[uav] = traf.ap.dest[idx]
     
         # Checks if all the active aircrafts are added to the previous_uavs list
         result = all(elem in temp_previous_active_uavs  for elem in currently_active_uavs)
@@ -168,6 +170,10 @@ class Loggy(core.Entity):
         if len(deleted_uavs) > 0:
             sanitized_currently_active_uavs = [x for x in self.previous_active_uavs if x not in deleted_uavs]
             for uav in deleted_uavs:
+                last_known_position = self.current_position[uav]
+                current_uav_end_position = self.end_position[uav]
+                
+                remaining_distance = calculator.latlondist()
 
                 uav_log.log(uav, self.previous_active_uavs_distance_flown[uav])
                 
