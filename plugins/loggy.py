@@ -20,19 +20,13 @@ update_interval = 1.0
 
 # Parameters used when logging
 uav_log_header = \
-    'UAV LOG\n' + \
-    'Information about all of the UAVs\n\n' + \
-    'Deletion Time [s], UAV ID, Distance traveled [m], Distance away from end coordinate [m]'
+    'Deletion Time [s],UAV,Distance traveled [m],Distance away from end coordinate [m]'
 
 conflict_log_header = \
-    'CONFLICTS LOG\n' + \
-    'List of all conflict instances\n\n' + \
-    'Simulation Time [s], UAV ID 1, UAV ID 2'
+    'Simulation Time [s],UAV1,UAV2'
 
 loss_of_separation_log_header = \
-    'LOSS OF SEPARATION LOG\n' + \
-    'List of all LoS instances\n\n' + \
-    'Simulation Time [s], UAV ID 1, UAV ID 2, Distance between the UAVs [m]'
+    'Simulation Time [s],UAV1,UAV2,Distance between the UAVs [m]'
 
 
 
@@ -50,10 +44,10 @@ def init_plugin():
     global conflict_log
     global loss_of_separation_log
 
-    uav_log = datalog.crelog('UAV_LOG', None, uav_log_header)
-    conflict_log = datalog.crelog('CONFLICT_LOG', None, conflict_log_header)
+    uav_log = datalog.crelog('uav_end_log', None, uav_log_header)
+    conflict_log = datalog.crelog('conflict_log', None, conflict_log_header)
     loss_of_separation_log = datalog.crelog(
-        'LOSS_OF_SEPARATION_LOG', None, loss_of_separation_log_header)
+        'loss_of_separation_log', None, loss_of_separation_log_header)
 
 
     # Configuration parameters
