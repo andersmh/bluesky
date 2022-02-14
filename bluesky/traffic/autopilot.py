@@ -1,6 +1,8 @@
 """ Autopilot Implementation."""
 from math import sin, cos, radians, sqrt, atan
 import numpy as np
+
+from bluesky import core
 try:
     from collections.abc import Collection
 except ImportError:
@@ -119,7 +121,41 @@ class Autopilot(Entity, replaceable=True):
         self.idxreached = bs.traf.actwp.Reached(qdr, dist, bs.traf.actwp.flyby,
                                        bs.traf.actwp.flyturn,bs.traf.actwp.turnrad,bs.traf.actwp.swlastwp)
         for i in self.idxreached:
+            """
+            print(str(bs.traf.id[i]))
+            print(f'{bs.traf.actwp.lat[i]},{bs.traf.actwp.lon[i]} active waypoint')
+            print(f'Is last waypoint: {bs.traf.actwp.swlastwp[i]}')
+            print(f'{bs.traf.ap.dest[i]} destination')
+            print()
+            # If the aircraft reached its last waypoint
+            
+            if bs.traf.actwp.swlastwp[i]:
+                
+                distance_between_current_last_and_end = geo.latlondist(bs.traf.actwp.lat[i], bs.traf.actwp.lon[i], bs.traf.ap.dest[i].split(',')[0], bs.traf.ap.dest[i].split(',')[1])
+                
+                #print(str(bs.traf.ap.route[i].))
+                if distance_between_current_last_and_end < 200:
+                    
+                    #stack.stack(f'SPD {bs.traf.id[i]} 0')
+                    #stack.stack(f'ALT {bs.traf.id[i]} 0')
+                    print(f'{bs.traf.id[i]} reached its destination')
+            """
+            """
+            # If just passed last waypoint
+            if bs.traf.actwp.swlastwp[i]:
+                print(f'{bs.traf.id[i]} reached its destination, according to bs.traf.actwp.swlastwp[i]')
+                print(f'Destination according to autopilote: {bs.traf.ap.dest[i]}')
+                print(f'UAVs current location according to bs.traf.lat[i], bs.traf.lon[i]: {bs.traf.lat[i]},{bs.traf.lon[i]}')     
+                print(f'Route according to bs.traf.ap.route[i]: {bs.traf.ap.route[i]}')   
+                distance_between_end_and_current_location = geo.latlondist(bs.traf.ap.dest[i].split(',')[0], bs.traf.ap.dest[i].split(',')[1], bs.traf.lat[i], bs.traf.lon[i] )
+                print(f'Distance between UAVs location and dest: {distance_between_end_and_current_location}')
+                print()
 
+                if float(distance_between_end_and_current_location) < 200:
+                    stack.stack(f'SPD {bs.traf.id[i]} 0')
+                    stack.stack(f'ALT {bs.traf.id[i]} 0')
+                
+            """
             # Save current wp speed for use on next leg when we pass this waypoint
             # VNAV speeds are always FROM-speeds, so we accelerate/decellerate at the waypoint
             # where this speed is specified, so we need to save it for use now
@@ -131,6 +167,8 @@ class Autopilot(Entity, replaceable=True):
 
             # Execute stack commands for the still active waypoint, which we pass
             self.route[i].runactwpstack()
+
+            
 
             # If specified, use the given turn radius of passing wp for bank angle
             if bs.traf.actwp.flyturn[i]:
@@ -149,6 +187,7 @@ class Autopilot(Entity, replaceable=True):
 
             # Get next wp, if there still is one
             if not bs.traf.actwp.swlastwp[i]:
+        
                 lat, lon, alt, bs.traf.actwp.nextspd[i], \
                 bs.traf.actwp.xtoalt[i], toalt, \
                     bs.traf.actwp.xtorta[i], bs.traf.actwp.torta[i], \
@@ -159,21 +198,26 @@ class Autopilot(Entity, replaceable=True):
                 bs.traf.actwp.nextturnlat[i], bs.traf.actwp.nextturnlon[i], \
                 bs.traf.actwp.nextturnspd[i], bs.traf.actwp.nextturnrad[i], \
                 bs.traf.actwp.nextturnidx[i] = self.route[i].getnextturnwp()
-
+            
             # Prevent trying to activate the next waypoint when it was already the last waypoint
             else:
-                bs.traf.swlnav[i] = False
-                bs.traf.swvnav[i] = False
-                bs.traf.swvnavspd[i] = False
+                end_name = bs.traf.id[i] + 'END'
+                bs.traf.ap.route[i].direct(i, end_name)
+                
+                #bs.traf.swlnav[i] = True
+                # bs.traf.swvnav[i] = False
+                #bs.traf.swvnavspd[i] = True
                 continue # Go to next a/c which reached its active waypoint
 
             # End of route/no more waypoints: switch off LNAV using the lnavon
             # switch returned by getnextwp
             if not lnavon and bs.traf.swlnav[i]:
+                print(f'2 - {bs.traf.id[i]}')
                 bs.traf.swlnav[i] = False
                 # Last wp: copy last wp values for alt and speed in autopilot
                 if bs.traf.swvnavspd[i] and bs.traf.actwp.nextspd[i]>= 0.0:
                     bs.traf.selspd[i] = bs.traf.actwp.nextspd[i]
+
 
             # In case of no LNAV, do not allow VNAV mode on its own
             bs.traf.swvnav[i] = bs.traf.swvnav[i] and bs.traf.swlnav[i]

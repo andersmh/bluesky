@@ -9,8 +9,8 @@ from bluesky.traffic import route
 
 
 # List of the names of all the data loggers
-loggers = ['UAV_LOG', 'CONFLICT_LOG',
-           'LOSS_OF_SEPARATION_LOG']
+loggers = ['uav_end_log', 'conflict_log',
+           'loss_of_separation_log']
 
 # The data loggers
 uav_log = None
@@ -189,6 +189,6 @@ class Loggy(core.Entity):
         elif cmd == 'ON':
             for x in range(len(loggers)):
                 stack.stack(f'{loggers[x]} ON')
-            return True, f'All data loggers for USEPE enabled.'
+            return True, f'All data loggers for LOGGY enabled.'
         else:
             return False, f'Available commands are: LIST, ON'

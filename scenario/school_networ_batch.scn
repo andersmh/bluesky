@@ -1,9 +1,0 @@
-00:00:00.00>SCEN school_network_1_test
-00:00:00.00>BATCH school_network_1.scn
-
-15:00:00.00>SCEN school_network_2_test
-15:00:00.00>BATCH school_network_2.scn
-
-
-30:00:00.00>SCEN school_network_3_test
-30:00:00.00>BATCH school_network_3.scn

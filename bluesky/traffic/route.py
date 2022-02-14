@@ -1461,7 +1461,7 @@ class Route(Replaceable):
         # such as when previous waypoints have been deleted
 
         iwpnear = max(self.iactwp,argmin(dist2))
-
+        
         #Unless behind us, next waypoint?
         if iwpnear+1<self.nwp:
             qdr = degrees(arctan2(dx[iwpnear],dy[iwpnear]))

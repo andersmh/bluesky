@@ -193,6 +193,8 @@ class ConflictResolution(Entity, replaceable=True):
                 if iwpid != -1:  # To avoid problems if there are no waypoints
                     bs.traf.ap.route[idx].direct(
                         idx, bs.traf.ap.route[idx].wpname[iwpid])
+                else:
+                    print('Woopsy!')
 
         # Remove pairs from the list that are past CPA or have deleted aircraft
         self.resopairs -= delpairs
