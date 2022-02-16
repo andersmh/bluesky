@@ -194,6 +194,7 @@ class Route(Replaceable):
         # Convert to positions
         name = args[0].upper().strip()
 
+
         # Choose reference position ot look up VOR and waypoints
         # First waypoint: own position
         if acrte.nwp == 0:
@@ -220,7 +221,7 @@ class Route(Replaceable):
 
         # Normal waypoint (no take-off waypoint => see else)
         if not takeoffwpt:
-
+            
             # Get waypoint position
             success, posobj = txt2pos(name, reflat, reflon)
             if success:
@@ -334,6 +335,8 @@ class Route(Replaceable):
                 afterwp = ""
 
             name = "T/O-" + acid # Use lat/lon naming convention
+
+        
         # Add waypoint
         wpidx = acrte.addwpt(acidx, name, wptype, lat, lon, alt, spd, afterwp, beforewp)
 
@@ -732,6 +735,7 @@ class Route(Replaceable):
         # Check if name already exists, if so add integer 01, 02, 03 etc.
         wprtename = Route.get_available_name(
             self.wpname, name)
+
         # Select on wptype
         # ORIGIN: Wptype is origin/destination?
         if wptype == Route.orig or wptype == Route.dest:
@@ -776,6 +780,7 @@ class Route(Replaceable):
             if wptype == Route.wplatlon:
                 newname = Route.get_available_name(
                     self.wpname, name, 3)
+                    
 
             # Else make data complete with nav database and closest to given lat,lon
             else: # so wptypewpnav

@@ -107,6 +107,7 @@ class Autopilot(Entity, replaceable=True):
         # Default ToC/ToD logic on
         self.swtoc[-n:] = True
         self.swtod[-n:] = True
+        
 
     #no longer timed @timed_function(name='fms', dt=bs.settings.fms_dt, manual=True)
     def update_fms(self, qdr, dist):
@@ -201,8 +202,9 @@ class Autopilot(Entity, replaceable=True):
             
             # Prevent trying to activate the next waypoint when it was already the last waypoint
             else:
-                end_name = bs.traf.id[i] + 'END'
-                bs.traf.ap.route[i].direct(i, end_name)
+                # ! My code
+                if len(bs.traf.ap.route[i].wpname) > 0:
+                    bs.traf.ap.route[i].direct(i, bs.traf.ap.route[i].wpname[len(bs.traf.ap.route[i].wpname)-1])
                 
                 #bs.traf.swlnav[i] = True
                 # bs.traf.swvnav[i] = False
@@ -212,12 +214,15 @@ class Autopilot(Entity, replaceable=True):
             # End of route/no more waypoints: switch off LNAV using the lnavon
             # switch returned by getnextwp
             if not lnavon and bs.traf.swlnav[i]:
-                print(f'2 - {bs.traf.id[i]}')
+                # ! My code
+                if len(bs.traf.ap.route[i].wpname) > 0:
+                    bs.traf.ap.route[i].direct(i, bs.traf.ap.route[i].wpname[len(bs.traf.ap.route[i].wpname)-1])
+                '''
                 bs.traf.swlnav[i] = False
                 # Last wp: copy last wp values for alt and speed in autopilot
                 if bs.traf.swvnavspd[i] and bs.traf.actwp.nextspd[i]>= 0.0:
                     bs.traf.selspd[i] = bs.traf.actwp.nextspd[i]
-
+                '''
 
             # In case of no LNAV, do not allow VNAV mode on its own
             bs.traf.swvnav[i] = bs.traf.swvnav[i] and bs.traf.swlnav[i]
